@@ -11,7 +11,8 @@ def point_avg(points):
     
     Returns a new point which is the center of all the points.
     """
-    raise NotImplementedError()
+    return [sum(point[i] for point in points) / len(points) for i in range(len(points[0]))]
+            
 
 
 def update_centers(dataset, assignments):
@@ -21,7 +22,20 @@ def update_centers(dataset, assignments):
     Compute the center for each of the assigned groups.
     Return `k` centers in a list
     """
-    raise NotImplementedError()
+    
+    clusters = list(set(assignments))
+    cluster.sort()
+    centers = []
+
+    for i in centers:
+        points = []
+        for i in range(len(dataset)):
+            if assignments[i] == i:
+                points.append(dataset[i])
+        centers.append(point_avg(points))
+
+    return centers
+    
 
 def assign_points(data_points, centers):
     """
@@ -43,20 +57,36 @@ def distance(a, b):
     """
     Returns the Euclidean distance between a and b
     """
-    raise NotImplementedError()
+    return sim.euclidean_dist(a,b)
 
 def distance_squared(a, b):
-    raise NotImplementedError()
+    return distance(a,b)**2
+    
 
 def generate_k(dataset, k):
     """
     Given `data_set`, which is an array of arrays,
     return a random set of k points from the data_set
     """
-    raise NotImplementedError()
+    idx = list(range(len(dataset)))
+    random.shuffle(idx)
+    points = idx[:k]
+    init_pts = []
+    
+    for i in points:
+        init_pts.append(dataset[idx])
+
+    return init_pts
+    
 
 def cost_function(clustering):
-    raise NotImplementedError()
+    sum = 0 
+    for cluster in clustering.values():
+        mean = point_avg(cluster)
+        for point in cluster:
+            sum += distance_squared(point,mean)
+    return sum
+
 
 
 def generate_k_pp(dataset, k):
@@ -66,7 +96,37 @@ def generate_k_pp(dataset, k):
     where points are picked with a probability proportional
     to their distance as per kmeans pp
     """
-    raise NotImplementedError()
+    centers = []
+    centers.append(dataset[random.randint(0,len(dataset)-1)])
+
+    for c in range(k-1):
+        dist = []
+        for point in dataset:
+            min_dist = inf
+            for centroid in centers:
+                min_dist = min(min_dist,distance(point,centroid))
+                dist.append(min_dist**2)
+                next_center_idx = find_min_dist(dist)
+                centers.append(dataset[next_center_idx])
+    return centers
+
+def find_min_dist(dist):
+    total = sum(dist)
+    rand_sum = random.randint(0,total)
+    threshold = 0
+    result = -1
+
+    for i, val in enumerate(dist):
+        threshold += val
+        if rand_sum <= threshold:
+            result = 1
+            break
+
+    return result
+
+
+
+
 
 
 def _do_lloyds_algo(dataset, k_points):
