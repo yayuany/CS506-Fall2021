@@ -9,7 +9,7 @@ def read_csv(csv_file_path):
     with open(csv_file_path, 'r') as f:
     lines = f.readlines()
     for line in lines:
-        l.append([x for x in line.split(",") if x != '\n"])
+        l.append([x for x in line.split(",") if x != '\n'])
 
 
     return l 
